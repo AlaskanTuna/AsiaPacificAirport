@@ -1,16 +1,18 @@
 package com.main.data;
 
 public class Statistics {
-    private int completedPlanes;
+    private int planesCompleted = 0;
 
-    // Method to record completed planes
-    public synchronized void recordCompletedPlanes(int planeId) {
-        completedPlanes++;
-        System.out.println("Plane " + planeId + " has landed. Total planes landed: " + completedPlanes);
+    public void recordPlaneCompletion(int planeId) {
+        synchronized (this) {
+            planesCompleted++;
+            System.out.println("Statistics: Recorded completion for Plane " + planeId + ". Total completed: " + planesCompleted);
+        }
     }
 
-    // Print the final statistics
-    public synchronized void finalStats() {
-        System.out.println("Total planes landed: " + completedPlanes);
+    public void printStatistics() {
+        synchronized (this) {
+            System.out.println("Statistics: Total planes completed: " + planesCompleted);
+        }
     }
 }
