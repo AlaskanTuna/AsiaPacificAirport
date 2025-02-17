@@ -1,18 +1,15 @@
 package com.main;
 
-import com.main.data.Logging;
 import com.main.data.Statistics;
-
 import java.util.Random;
 
 public class AirportMain {
     public static void main(String[] args) {
         // Create shared objects
-        Logging logger = new Logging();
         Statistics statistics = new Statistics();
 
         // Create the ATC instance
-        ATC atc = new ATC(logger, statistics);
+        ATC atc = new ATC(statistics);
 
         // Optionally start an ATC thread if periodic tasks are needed (here, it’s optional)
         Thread atcThread = new Thread(() -> {
@@ -27,29 +24,29 @@ public class AirportMain {
         atcThread.start();
 
         // Create and start the RefuelingTruck thread
-        RefuelingTruck refuelingTruck = new RefuelingTruck(logger);
+        RefuelingTruck refuelingTruck = new RefuelingTruck();
         Thread refuelTruckThread = new Thread(refuelingTruck, "RefuelingTruck");
         refuelTruckThread.start();
 
         // Create and start 3 Gate threads
-        Gates[] gates = new Gates[3];
-        Thread[] gateThreads = new Thread[3];
-        for (int i = 0; i < 3; i++) {
-            gates[i] = new Gates(i + 1, logger);
+        Gates[] gates = new Gates[Constants.NUM_GATES];
+        Thread[] gateThreads = new Thread[Constants.NUM_GATES];
+        for (int i = 0; i < Constants.NUM_GATES; i++) {
+            gates[i] = new Gates(i + 1);
             gateThreads[i] = new Thread(gates[i], "Gate-" + (i + 1));
             gateThreads[i].start();
         }
 
         // Create and start 6 Plane threads with staggered arrivals
-        Thread[] planeThreads = new Thread[6];
+        Thread[] planeThreads = new Thread[Constants.NUM_PLANES];
         Random random = new Random();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < Constants.NUM_PLANES; i++) {
             try {
-                Thread.sleep(random.nextInt(2000));  // Staggered arrival
+                Thread.sleep(random.nextInt(Constants.PLANE_ARRIVAL_MAX_DELAY_MS));  // Staggered arrival
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            Planes plane = new Planes(i + 1, atc, gates, refuelingTruck, logger, statistics);
+            Planes plane = new Planes(i + 1, atc, gates, refuelingTruck, statistics);
             planeThreads[i] = new Thread(plane, "Plane-" + (i + 1));
             planeThreads[i].start();
         }
@@ -64,7 +61,7 @@ public class AirportMain {
         }
 
         // Print final statistics
-        logger.log("Simulation complete. Final statistics:");
+        System.out.println("Simulation complete. Final statistics:");
         statistics.printStatistics();
 
         // Optionally, interrupt long-running threads (ATC, Gates, RefuelingTruck)

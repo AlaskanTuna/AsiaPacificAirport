@@ -1,16 +1,11 @@
 package com.main;
 
-import com.main.data.Logging;
-import com.main.data.Statistics;
-
 public class Gates implements Runnable {
     private final int gateId;
-    private final Logging logger;
     private boolean occupied = false;
 
-    public Gates(int gateId, Logging logger) {
+    public Gates(int gateId) {
         this.gateId = gateId;
-        this.logger = logger;
     }
 
     // Synchronized accessor methods for occupancy
@@ -23,9 +18,9 @@ public class Gates implements Runnable {
     }
 
     public void performGateOperations(int planeId) {
-        logger.log("Gate " + gateId + ": Performing operations for Plane " + planeId);
-        sleep(1500);  // Simulate operations such as disembarking/boarding
-        logger.log("Gate " + gateId + ": Completed operations for Plane " + planeId);
+        System.out.println("Gate " + gateId + ": Performing supply refill and cleaning for Plane " + planeId);
+        sleep(Constants.GATE_OPERATION_TIME_MS);
+        System.out.println("Gate " + gateId + ": Completed supply refill and cleaning for Plane " + planeId);
         synchronized (this) {
             occupied = false;
             notifyAll();
