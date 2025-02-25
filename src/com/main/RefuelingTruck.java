@@ -1,8 +1,22 @@
 package com.main;
 
-public class RefuelingTruck implements Runnable {
-    private boolean isBusy = false;
+import com.main.ATC;
+import com.main.Gates;
+import com.main.Planes;
+import com.main.data.Statistics;
 
+public class RefuelingTruck implements Runnable {
+    // Data fields
+    private boolean isBusy = false;
+    private final String threadName = "RefuelingTruck";
+
+    // Constructors
+
+    // Getters
+
+    // Setters
+
+    // Methods
     public void requestRefuel(int planeId) {
         synchronized (this) {
             while (isBusy) {
@@ -13,9 +27,9 @@ public class RefuelingTruck implements Runnable {
                 }
             }
             isBusy = true;
-            System.out.println("RefuelingTruck: Starting refuelling for Plane " + planeId);
-            sleep(Constants.REFUEL_TIME_MS);  // Simulate refuelling time
-            System.out.println("RefuelingTruck: Completed refuelling for Plane " + planeId);
+            System.out.println(AirportMain.getTimecode() + " [" + threadName + "] Starting refuelling for Plane " + planeId);
+            sleep(Constants.REFUEL_TIME_MS);
+            System.out.println(AirportMain.getTimecode() + " [" + threadName + "] Completed refuelling for Plane " + planeId);
             isBusy = false;
             notifyAll();
         }
@@ -23,7 +37,6 @@ public class RefuelingTruck implements Runnable {
 
     @Override
     public void run() {
-        // The truck's thread loop remains active (optional) for any periodic tasks.
         while (!Thread.currentThread().isInterrupted()) {
             sleep(500);
         }
