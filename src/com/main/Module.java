@@ -9,6 +9,7 @@ import com.main.RefuelingTruck;
 import com.main.Statistics;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Module {
     // -------------------- Data Fields -------------------- //
@@ -76,7 +77,40 @@ public class Module {
         printAnnouncement(message, Constants.ANSI_CYAN, bold);
     }
 
+    // -------------------- Menus -------------------- //
+
     public static void mainMenu() {
-        // TODO: Implement Normal Simulation / Emergency Simulation / Exit
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
+        while (running) {
+            clearScreen();
+            printDivider();
+            System.out.println(Constants.MENU_TITLE);
+            printDivider();
+            System.out.println("[1] Normal Simulation");
+            System.out.println("[2] Emergency Simulation");
+            System.out.println("[3] Exit");
+            printDivider();
+            System.out.print("Enter your choice (1-3): ");
+
+            String input = scanner.nextLine();
+            switch (input) {
+                case "1":
+                    AirportMain.normalSimulation(new String[0]);
+                    break;
+                case "2":
+                    // TODO: Implement emergency simulation
+                    break;
+                case "3":
+                    running = false;
+                    clearScreen();
+                    System.out.println("Exiting simulation.");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+            }
+        }
+        scanner.close();
     }
 }

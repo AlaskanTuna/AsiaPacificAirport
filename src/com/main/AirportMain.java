@@ -13,7 +13,7 @@ import java.util.Random;
 public class AirportMain {
     // -------------------- Data Fields -------------------- //
 
-    private static final long startTime = System.currentTimeMillis();
+    private static long startTime = 0;
 
     // -------------------- Getters -------------------- //
 
@@ -27,6 +27,14 @@ public class AirportMain {
     // -------------------- Main Method -------------------- //
 
     public static void main(String[] args) {
+        Module.mainMenu();
+    }
+
+    // -------------------- Simulation Logic -------------------- //
+
+    public static void normalSimulation(String[] args) {
+        startTime = System.currentTimeMillis(); // Set start time
+
         // Create shared objects
         Statistics statistics = new Statistics();
 

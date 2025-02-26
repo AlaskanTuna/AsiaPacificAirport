@@ -41,6 +41,10 @@ public class Constants {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_BOLD = "\u001B[1m";
 
+    // -------------------- Menu Constants -------------------- //
+
+    public static final String MENU_TITLE = "Airport Management System";
+
     // -------------------- Message Constants -------------------- //
     public static final String WAIT_MSG = "Press Enter key to continue...";
 }
