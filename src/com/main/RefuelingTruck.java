@@ -6,19 +6,16 @@ import com.main.ATC;
 import com.main.Gates;
 import com.main.Planes;
 import com.main.Statistics;
+import com.main.Module;
 
 public class RefuelingTruck implements Runnable {
-    // Data fields
+    // -------------------- Data Fields -------------------- //
+
     private boolean isBusy = false;
     private final String threadName = "RefuelingTruck";
 
-    // Constructors
+    // -------------------- Methods -------------------- //
 
-    // Getters
-
-    // Setters
-
-    // Methods
     public void requestRefuel(int planeId) {
         synchronized (this) {
             while (isBusy) {
@@ -29,9 +26,9 @@ public class RefuelingTruck implements Runnable {
                 }
             }
             isBusy = true;
-            System.out.println(AirportMain.getTimecode() + " [" + threadName + "] Starting refuelling for Plane " + planeId);
+            Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Starting refuelling for Plane " + planeId + ".");
             sleep(Constants.REFUEL_TIME_MS);
-            System.out.println(AirportMain.getTimecode() + " [" + threadName + "] Completed refuelling for Plane " + planeId);
+            Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Completed refuelling for Plane " + planeId + ".");
             isBusy = false;
             notifyAll();
         }
@@ -43,6 +40,8 @@ public class RefuelingTruck implements Runnable {
             sleep(500);
         }
     }
+
+    // -------------------- Helper Methods -------------------- //
 
     private void sleep(long ms) {
         try {

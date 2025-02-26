@@ -11,10 +11,12 @@ import com.main.Statistics;
 import java.util.Random;
 
 public class AirportMain {
-    // Data fields
+    // -------------------- Data Fields -------------------- //
+
     private static final long startTime = System.currentTimeMillis();
 
-    // Getters
+    // -------------------- Getters -------------------- //
+
     public static String getTimecode() {
         long elapsedMs = System.currentTimeMillis() - startTime; // Get elapsed time by - start time
         long seconds = (elapsedMs / 1000) % 60;
@@ -22,9 +24,8 @@ public class AirportMain {
         return String.format("[%02d:%02d]", minutes, seconds);
     }
 
-    // Setters
+    // -------------------- Main Method -------------------- //
 
-    // Methods
     public static void main(String[] args) {
         // Create shared objects
         Statistics statistics = new Statistics();
@@ -74,11 +75,10 @@ public class AirportMain {
             }
         }
 
-        // Print final statistics
-        System.out.println("\nSimulation complete. Final statistics:");
+        // Print final statistics (no need for extra println since Module handles it)
         statistics.printStatistics();
 
-        // IMPORTANT: Interrupt all threads to stop the simulation
+        // Interrupt all threads to stop the simulation
         for (Thread t : gateThreads) {
             t.interrupt();
         }
@@ -86,3 +86,8 @@ public class AirportMain {
         refuelTruckThread.interrupt();
     }
 }
+
+/* CMD RUNNING COMMANDS
+javac -d bin src/com/main/*.java
+java -cp bin com.main.AirportMain
+*/
