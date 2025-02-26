@@ -1,9 +1,11 @@
+// RefuelingTruck.java
+
 package com.main;
 
 import com.main.ATC;
 import com.main.Gates;
 import com.main.Planes;
-import com.main.data.Statistics;
+import com.main.Statistics;
 
 public class RefuelingTruck implements Runnable {
     // Data fields

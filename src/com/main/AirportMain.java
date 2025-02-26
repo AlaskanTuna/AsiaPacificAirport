@@ -1,10 +1,12 @@
+// AirportMain.java
+
 package com.main;
 
 import com.main.ATC;
 import com.main.Gates;
 import com.main.Planes;
 import com.main.RefuelingTruck;
-import com.main.data.Statistics;
+import com.main.Statistics;
 
 import java.util.Random;
 

@@ -1,9 +1,11 @@
+// Planes.java
+
 package com.main;
 
 import com.main.ATC;
 import com.main.Gates;
 import com.main.RefuelingTruck;
-import com.main.data.Statistics;
+import com.main.Statistics;
 
 public class Planes implements Runnable {
     // Data fields
@@ -30,11 +32,12 @@ public class Planes implements Runnable {
     @Override
     public void run() {
         // 1. Request landing
+        System.out.println(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting landing.");
         atc.requestLanding(planeId);
         synchronized (atc) {
             while (!atc.isRunwayClearedForLanding(planeId)) {
                 try {
-                    atc.wait(500);
+                    atc.wait(Constants.LANDING_REQUEST_TIME_MS); // Simulate waiting time between landing requests
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -56,17 +59,22 @@ public class Planes implements Runnable {
             for (Gates g : gates) {
                 synchronized (g) {
                     if (!g.isOccupied()) {
+                        try {
+                            g.wait(Constants.GATE_DOCKING_TIME_MS); // Simulate docking time
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                         g.setOccupied(true);
                         assignedGate = g;
                         docked = true;
-                        System.out.println(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Docked at Gate " + g.getGateId());
+                        System.out.println(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Docked at Gate " + g.getGateId() + ".");
                         break;
                     }
                 }
             }
             if (!docked) {
                 System.out.println(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Waiting for an available gate.");
-                sleep(500);
+                sleep(1000);
             }
         }
 

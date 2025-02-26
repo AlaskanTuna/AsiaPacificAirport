@@ -1,9 +1,11 @@
+// Gates.java
+
 package com.main;
 
 import com.main.ATC;
 import com.main.Planes;
 import com.main.RefuelingTruck;
-import com.main.data.Statistics;
+import com.main.Statistics;
 
 public class Gates implements Runnable {
     // Data fields
