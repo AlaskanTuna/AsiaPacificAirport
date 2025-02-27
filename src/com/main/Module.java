@@ -61,6 +61,15 @@ public class Module {
         }
     }
 
+    public static void printStatsMessage(String message) {
+        synchronized (printLock) {
+            clearScreen();
+            System.out.print(Constants.ANSI_YELLOW);
+            System.out.println(AirportMain.getTimecode() + " " + message);
+            System.out.print(Constants.ANSI_RESET);
+        }
+    }
+
     // -------------------- Announcements Reporting -------------------- //
 
     private static void printAnnouncement(String message, String color, boolean bold) {

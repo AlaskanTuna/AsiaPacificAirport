@@ -119,11 +119,11 @@ public class ATC implements Runnable {
         return !runwayFree && !landingQueue.contains(planeId) && !emergencyQueue.contains(planeId) && groundCount <= Constants.MAX_GROUND;
     }
 
-    public synchronized boolean isRunwayClearedForTakeoff(int planeId) { // To check if runway is cleared for takeoff
+    public synchronized boolean isRunwayClearedForTakeoff(int planeId) {
         return !runwayFree && !takeoffQueue.contains(planeId);
     }
 
-    public synchronized void setRunwayFree() { // To set runway free after landing or takeoff
+    public synchronized void setRunwayFree() {
         runwayFree = true;
     }
 }

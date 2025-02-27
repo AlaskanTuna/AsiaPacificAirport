@@ -7,6 +7,7 @@ public class Constants {
 
     // -------------------- Plane Constants -------------------- //
 
+    public static final int PASSENGERS_PER_PLANE = 50;
     public static final int MAX_GROUND = 3; // Max planes on the ground (incl. runway)
     public static final int NUM_PLANES = 6;
     public static final int LANDING_REQUEST_TIME_MS = 2000;
@@ -18,7 +19,7 @@ public class Constants {
 
     public static final int NUM_GATES = 3;
     public static final int GATE_DOCKING_TIME_MS = 2000;
-    public static final int GATE_OPERATION_TIME_MS = 500;
+    public static final int GATE_OPERATION_TIME_MS = 2000;
 
     // -------------------- Refueling Truck Constants -------------------- //
 

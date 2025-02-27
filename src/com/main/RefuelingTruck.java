@@ -8,19 +8,25 @@ import com.main.Planes;
 import com.main.Statistics;
 import com.main.Module;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class RefuelingTruck implements Runnable {
     // -------------------- Data Fields -------------------- //
 
     private boolean isBusy = false;
     private final String threadName = "RefuelingTruck";
+    private final ReentrantLock lock = new ReentrantLock();
 
     // -------------------- Methods -------------------- //
 
     public void requestRefuel(int planeId) {
-        synchronized (this) {
+        lock.lock();
+        try {
             while (isBusy) {
                 try {
-                    wait();
+                    lock.unlock(); // Release lock temporarily
+                    Thread.sleep(100);
+                    lock.lock();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -30,7 +36,8 @@ public class RefuelingTruck implements Runnable {
             sleep(Constants.REFUEL_TIME_MS);
             Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Completed refuelling for Plane " + planeId + ".");
             isBusy = false;
-            notifyAll();
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -40,8 +47,6 @@ public class RefuelingTruck implements Runnable {
             sleep(500);
         }
     }
-
-    // -------------------- Helper Methods -------------------- //
 
     private void sleep(long ms) {
         try {

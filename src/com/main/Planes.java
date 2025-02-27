@@ -8,6 +8,8 @@ import com.main.RefuelingTruck;
 import com.main.Statistics;
 import com.main.Module;
 
+import java.util.concurrent.Semaphore;
+
 public class Planes implements Runnable {
     // -------------------- Data Fields -------------------- //
 
@@ -17,16 +19,23 @@ public class Planes implements Runnable {
     private final RefuelingTruck refuelingTruck;
     private final Statistics statistics;
     private final boolean isEmergency;
+    private final Semaphore gateSemaphore;
+    private long landingTime;
 
     // -------------------- Constructors -------------------- //
 
-    public Planes(int planeId, ATC atc, Gates[] gates, RefuelingTruck refuelingTruck, Statistics statistics, boolean isEmergency) {
+    public Planes(int planeId, ATC atc, Gates[] gates, RefuelingTruck refuelingTruck, Statistics statistics, boolean isEmergency, Semaphore gateSemaphore) {
         this.planeId = planeId;
         this.atc = atc;
         this.gates = gates;
         this.refuelingTruck = refuelingTruck;
         this.statistics = statistics;
         this.isEmergency = isEmergency;
+        this.gateSemaphore = gateSemaphore;
+    }
+
+    public Planes(int planeId, ATC atc, Gates[] gates, RefuelingTruck refuelingTruck, Statistics statistics) {
+        this(planeId, atc, gates, refuelingTruck, statistics, false, null); // For legacy calls without semaphore
     }
 
     // -------------------- Methods -------------------- //
@@ -39,7 +48,7 @@ public class Planes implements Runnable {
         synchronized (atc) {
             while (!atc.isRunwayClearedForLanding(planeId)) {
                 try {
-                    atc.wait(Constants.LANDING_REQUEST_TIME_MS); // Simulate waiting time between landing requests
+                    atc.wait(Constants.LANDING_REQUEST_TIME_MS);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -49,6 +58,7 @@ public class Planes implements Runnable {
         sleep(Constants.LANDING_TIME_MS);
         Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Landed on runway.");
         atc.landingComplete(planeId);
+        landingTime = System.currentTimeMillis();
         synchronized (atc) {
             atc.setRunwayFree();
             atc.notifyAll();
@@ -56,31 +66,45 @@ public class Planes implements Runnable {
 
         // 2. Gate docking process
         Gates assignedGate = null;
-        boolean docked = false;
-        while (!docked) {
+        try {
+            if (gateSemaphore != null) {
+                gateSemaphore.acquire(); // Acquire gate permit before plane docks
+            }
             for (Gates g : gates) {
                 synchronized (g) {
                     if (!g.isOccupied()) {
-                        sleep(Constants.GATE_DOCKING_TIME_MS); // Simulate time to dock at the gate
+                        sleep(Constants.GATE_DOCKING_TIME_MS);  // Simulate docking time
                         g.setOccupied(true);
                         assignedGate = g;
-                        docked = true;
+                        long dockingTime = System.currentTimeMillis();
+                        long waitTime = dockingTime - landingTime;
+                        statistics.recordGateWaitTime(waitTime);
                         Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Docked at Gate " + g.getGateId() + ".");
                         break;
                     }
                 }
             }
-            if (!docked) {
+
+            // 3. Perform gate operations
+            if (assignedGate == null) {
                 Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Waiting for an available gate.");
                 sleep(1000);
+            } else {
+                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Disembarking passengers from the plane.");
+                assignedGate.performGateOperations(planeId);
+                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Embarked passengers onto the plane.");
             }
-        }
-
-        // 3. Perform gate operations
-        if (assignedGate != null) {
-            Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Disembarking passengers from the plane.");
-            assignedGate.performGateOperations(planeId);
-            Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Embarked passengers onto the plane.");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            if (assignedGate != null) {
+                synchronized (assignedGate) {
+                    assignedGate.setOccupied(false);
+                }
+                if (gateSemaphore != null) {
+                    gateSemaphore.release(); // Release gate permit after plane undocks
+                }
+            }
         }
 
         // 4. Request refuelling
