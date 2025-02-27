@@ -46,5 +46,5 @@ public class Constants {
     public static final String MENU_TITLE = "Airport Management System";
 
     // -------------------- Message Constants -------------------- //
-    public static final String WAIT_MSG = "Press Enter key to continue...";
+    public static final String CONTINUE_MSG = "Press Enter key to continue...";
 }

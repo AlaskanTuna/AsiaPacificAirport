@@ -15,12 +15,31 @@ public class Module {
     // -------------------- Data Fields -------------------- //
 
     private static final Object printLock = new Object();
+    public static long startTime = 0;
 
     // -------------------- Getters -------------------- //
 
     private static int getTerminalWidth() {
         String columns = System.getenv("COLUMNS");
         return (columns != null && !columns.isEmpty()) ? Integer.parseInt(columns) : Constants.DIVIDER_LENGTH;
+    }
+
+    public static String getTimecode() {
+        if (startTime == 0) return "[00:00]";
+        long elapsedMs = System.currentTimeMillis() - startTime;
+        long seconds = (elapsedMs / 1000) % 60;
+        long minutes = (elapsedMs / (1000 * 60)) % 60;
+        return String.format("[%02d:%02d]", minutes, seconds);
+    }
+
+    // -------------------- Time Management -------------------- //
+
+    public static void startTime() {
+        startTime = System.currentTimeMillis();
+    }
+
+    public static void resetTime() {
+        startTime = 0;
     }
 
     // -------------------- Print Utilities -------------------- //
@@ -47,15 +66,21 @@ public class Module {
     private static void printAnnouncement(String message, String color, boolean bold) {
         synchronized (printLock) {
             clearScreen();
-            if (bold) {
-                System.out.print(Constants.ANSI_BOLD);
-            }
+            if (bold) System.out.print(Constants.ANSI_BOLD);
             System.out.print(color);
             printDivider();
             System.out.print(Constants.INDICATOR);
             System.out.println(message);
             printDivider();
             System.out.print(Constants.ANSI_RESET);
+            if (message.contains("Simulation complete")) {
+                System.out.println("Simulation Completed.");
+                System.out.println(Constants.CONTINUE_MSG);
+                try {
+                    System.in.read();
+                } catch (IOException ignored) {}
+                resetTime();
+            }
         }
     }
 
@@ -97,10 +122,12 @@ public class Module {
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
+                    startTime();
                     AirportMain.normalSimulation(new String[0]);
                     break;
                 case "2":
-                    // TODO: Implement emergency simulation
+                    startTime();
+                    AirportMain.emergencySimulation(new String[0]);
                     break;
                 case "3":
                     running = false;

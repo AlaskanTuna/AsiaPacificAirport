@@ -16,15 +16,17 @@ public class Planes implements Runnable {
     private final Gates[] gates;
     private final RefuelingTruck refuelingTruck;
     private final Statistics statistics;
+    private final boolean isEmergency;
 
     // -------------------- Constructors -------------------- //
 
-    public Planes(int planeId, ATC atc, Gates[] gates, RefuelingTruck refuelingTruck, Statistics statistics) {
+    public Planes(int planeId, ATC atc, Gates[] gates, RefuelingTruck refuelingTruck, Statistics statistics, boolean isEmergency) {
         this.planeId = planeId;
         this.atc = atc;
         this.gates = gates;
         this.refuelingTruck = refuelingTruck;
         this.statistics = statistics;
+        this.isEmergency = isEmergency;
     }
 
     // -------------------- Methods -------------------- //
@@ -32,8 +34,8 @@ public class Planes implements Runnable {
     @Override
     public void run() {
         // 1. Request landing
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting landing.");
-        atc.requestLanding(planeId);
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting " + (isEmergency ? "emergency " : "") + "landing.");
+        atc.requestLanding(planeId, isEmergency);
         synchronized (atc) {
             while (!atc.isRunwayClearedForLanding(planeId)) {
                 try {
