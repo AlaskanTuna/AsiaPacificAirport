@@ -61,39 +61,26 @@ public class Statistics {
         }
     }
 
-    public void printStatistics() {
+    public void printStatistics(ATC atc) {
         lock.readLock().lock();
         try {
-            // Sanity Check
+            // 1. Sanity Check
             boolean allGatesEmpty = true;
             for (Gates gate : gates) {
                 if (gate.isOccupied()) {
                     allGatesEmpty = false;
-                    Module.printStatsMessage("Sanity Check Failed: Gate " + gate.getGateId() + " is still occupied.");
+                    break; // No need to check further if one gate is occupied
                 }
             }
-            if (allGatesEmpty) {
-                Module.printStatsMessage("Sanity Check Passed: All gates are empty.");
-            }
 
-            // Waiting Time Statistics
-            if (gateWaitTimes.isEmpty()) {
-                Module.printStatsMessage("No gate waiting times recorded.");
-            } else {
-                long maxWait = gateWaitTimes.stream().mapToLong(Long::longValue).max().getAsLong();
-                long minWait = gateWaitTimes.stream().mapToLong(Long::longValue).min().getAsLong();
-                double avgWait = gateWaitTimes.stream().mapToLong(Long::longValue).average().getAsDouble();
-                Module.printStatsMessage("Max Gate Wait Time: " + maxWait + " ms.");
-                Module.printStatsMessage("Min Gate Wait Time: " + minWait + " ms.");
-                Module.printStatsMessage("Avg Gate Wait Time: " + String.format("%.2f", avgWait) + " ms.");
-            }
+            // 2. Waiting Time Statistics
+            long maxWait = gateWaitTimes.isEmpty() ? 0 : gateWaitTimes.stream().mapToLong(Long::longValue).max().getAsLong();
+            long minWait = gateWaitTimes.isEmpty() ? 0 : gateWaitTimes.stream().mapToLong(Long::longValue).min().getAsLong();
+            double avgWait = gateWaitTimes.isEmpty() ? 0.0 : gateWaitTimes.stream().mapToLong(Long::longValue).average().getAsDouble();
 
-            // Planes Served and Passengers Boarded
-            Module.printStatsMessage("Number of Planes Served: " + planesCompleted + " / " + Constants.NUM_PLANES + ".");
-            Module.printStatsMessage("Total Passengers Boarded: " + totalPassengersBoarded + " / " + (Constants.NUM_PLANES * Constants.PASSENGERS_PER_PLANE) + ".");
-
-            // Final completion message
-            Module.announceFinalStatistics(planesCompleted, true);
+            // 3. Final completion and stats summary
+            Module.announceFinalCompletion(planesCompleted, atc.getGroundCount(), true);
+            Module.announceStatsSummary(allGatesEmpty, maxWait, minWait, avgWait, planesCompleted, totalPassengersBoarded);
         } finally {
             lock.readLock().unlock();
         }

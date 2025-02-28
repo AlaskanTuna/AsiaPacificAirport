@@ -61,17 +61,6 @@ public class Module {
         }
     }
 
-    public static void printStatsMessage(String message) {
-        synchronized (printLock) {
-            clearScreen();
-            System.out.print(Constants.ANSI_YELLOW);
-            System.out.println(AirportMain.getTimecode() + " " + message);
-            System.out.print(Constants.ANSI_RESET);
-        }
-    }
-
-    // -------------------- Announcements Reporting -------------------- //
-
     private static void printAnnouncement(String message, String color, boolean bold) {
         synchronized (printLock) {
             clearScreen();
@@ -82,16 +71,23 @@ public class Module {
             System.out.println(message);
             printDivider();
             System.out.print(Constants.ANSI_RESET);
-            if (message.contains("Simulation complete")) {
-                System.out.println("Simulation Completed.");
-                System.out.println(Constants.CONTINUE_MSG);
-                try {
-                    System.in.read();
-                } catch (IOException ignored) {}
-                resetTime();
-            }
         }
     }
+
+    public static void printStats(String message, String color, boolean bold) {
+        synchronized (printLock) {
+            // clearScreen();
+            if (bold) System.out.print(Constants.ANSI_BOLD);
+            System.out.print(color);
+            printDivider();
+            System.out.print(Constants.INDICATOR);
+            System.out.println(message);
+            printDivider();
+            System.out.print(Constants.ANSI_RESET);
+        }
+    }
+
+    // -------------------- Announcements Reporting -------------------- //
 
     public static void announceGroundCountWarning(int groundCount, boolean bold) {
         String message = String.format("%s [ATC] Ground count is at maximum capacity: %d.",
@@ -105,10 +101,40 @@ public class Module {
         printAnnouncement(message, Constants.ANSI_GREEN, bold);
     }
 
-    public static void announceFinalStatistics(int totalCompleted, boolean bold) {
-        String message = String.format("%s [%s] Simulation complete. Total planes completed: %d.",
-                AirportMain.getTimecode(), Thread.currentThread().getName(), totalCompleted);
+    public static void announceFinalCompletion(int totalCompleted, int groundCount, boolean bold) {
+        String message = String.format("All Planes Have Successfully Landed and Departed!\n" +
+                        "\nSimulation End Time: %s." +
+                        "\nTotal Completed: %d." +
+                        "\nGround Count: %d.",
+                AirportMain.getTimecode(), totalCompleted, groundCount);
         printAnnouncement(message, Constants.ANSI_CYAN, bold);
+    }
+
+    public static void announceStatsSummary(boolean allGatesEmpty, long maxWait, long minWait, double avgWait, int totalCompleted, int totalPassengersBoarded) {
+        synchronized (printLock) {
+            StringBuilder message = new StringBuilder("Simulation Statistics Have Been Summarized!\n");
+            message.append("\n").append(allGatesEmpty ? "Sanity Check Passed: All gates are empty." : "Sanity Check Failed: Some gates are still occupied.");
+
+            if (maxWait == 0 && minWait == 0 && avgWait == 0.0) {
+                message.append("\nNo gate waiting times recorded.");
+            } else {
+                message.append("\nMax Gate Wait Time: ").append(maxWait).append(" ms.");
+                message.append("\nMin Gate Wait Time: ").append(minWait).append(" ms.");
+                message.append("\nAvg Gate Wait Time: ").append(String.format("%.2f", avgWait)).append(" ms.");
+            }
+
+            message.append("\nNumber of Planes Served: ").append(totalCompleted).append(" / ").append(Constants.NUM_PLANES).append(".");
+            message.append("\nTotal Passengers Boarded: ").append(totalPassengersBoarded).append(" / ").append(Constants.NUM_PLANES * Constants.PASSENGERS_PER_PLANE).append(".");
+
+            printStats(message.toString(), Constants.ANSI_YELLOW, true);
+
+            System.out.println(Constants.CONTINUE_MSG);
+            try {
+                System.in.read();
+            } catch (IOException ignored) {}
+
+            resetTime(); // Reset the simulation timer
+        }
     }
 
     // -------------------- Menus -------------------- //

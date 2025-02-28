@@ -77,7 +77,7 @@ public class AirportMain {
         }
 
         // 7. Print final statistics
-        statistics.printStatistics();
+        statistics.printStatistics(atc);
 
         // 8. Interrupt all threads to stop the simulation
         for (Thread t : gateThreads) {
@@ -166,7 +166,7 @@ public class AirportMain {
         }
 
         // 7. Print final statistics
-        statistics.printStatistics();
+        statistics.printStatistics(atc);
 
         // 8. Interrupt all threads
         for (Thread t : gateThreads) {

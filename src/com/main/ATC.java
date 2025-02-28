@@ -27,6 +27,12 @@ public class ATC implements Runnable {
         this.statistics = statistics;
     }
 
+    // -------------------- Getters -------------------- //
+
+    public int getGroundCount() {
+        return groundCount;
+    }
+
     // -------------------- Methods -------------------- //
 
     // Overload method for emergency landing
