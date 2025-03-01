@@ -89,9 +89,6 @@ public class AirportMain {
 
     public static void emergencySimulation(String[] args) {
 
-        /* A congested scenario should be simulated where 2 planes are waiting to land while the 2 gates
-        are occupied, and a 3rd plane comes in with fuel shortage, requiring emergency landing. */
-
         // 1. Create and start 3 Gate threads
         Gates[] gates = new Gates[Constants.NUM_GATES];
         Thread[] gateThreads = new Thread[Constants.NUM_GATES];
@@ -184,7 +181,3 @@ public class AirportMain {
         refuelTruckThread.interrupt();
     }
 }
-
-// CMD RUNNING COMMANDS
-// javac -d bin src/com/main/*.java
-// java -cp bin com.main.AirportMain
