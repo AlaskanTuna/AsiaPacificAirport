@@ -11,25 +11,20 @@ public class Constants {
     public static final int MAX_GROUND = 3; // Max planes on the ground (incl. runway)
     public static final int NUM_PLANES = 6;
     public static final int LANDING_REQUEST_TIME_MS = 2000;
-    public static final int LANDING_TIME_MS = 3000;
-    public static final int TAKEOFF_TIME_MS = 3000;
-    public static final int PLANE_ARRIVAL_MAX_DELAY_MS = 5000;
+    public static final int TAKEOFF_REQUEST_TIME_MS = 2000;
+    public static final int LANDING_TIME_MS = 2000;
+    public static final int TAKEOFF_TIME_MS = 2000;
+    public static final int PLANE_ARRIVAL_MAX_DELAY_MS = 3000;
 
     // -------------------- Gate Constants -------------------- //
 
     public static final int NUM_GATES = 3;
     public static final int GATE_DOCKING_TIME_MS = 2000;
-    public static final int GATE_OPERATION_TIME_MS = 2000;
+    public static final int GATE_OPERATION_TIME_MS = 4000;
 
     // -------------------- Refueling Truck Constants -------------------- //
 
-    public static final int REFUEL_TIME_MS = 3000;
-
-    // Menu constants
-
-    public static final String DIVIDER_LINE = "-";
-    public static final String INDICATOR = ">>> ";
-    public static final int DIVIDER_LENGTH = 80;
+    public static final int REFUEL_TIME_MS = 2000;
 
     // -------------------- ANSI Escape Codes -------------------- //
 
@@ -45,7 +40,11 @@ public class Constants {
     // -------------------- Menu Constants -------------------- //
 
     public static final String MENU_TITLE = "Airport Management System";
+    public static final String DIVIDER_LINE = "-";
+    public static final String INDICATOR = ">>> ";
+    public static final int DIVIDER_LENGTH = 80;
 
     // -------------------- Message Constants -------------------- //
+
     public static final String CONTINUE_MSG = "Press Enter key to continue...";
 }

@@ -2,11 +2,11 @@
 
 package com.main;
 
-import com.main.ATC;
-import com.main.Gates;
-import com.main.RefuelingTruck;
-import com.main.Statistics;
-import com.main.Module;
+import com.main.ATC.*;
+import com.main.Gates.*;
+import com.main.RefuelingTruck.*;
+import com.main.Statistics.*;
+import com.main.Module.*;
 
 import java.util.concurrent.Semaphore;
 
@@ -112,11 +112,13 @@ public class Planes implements Runnable {
         refuelingTruck.requestRefuel(planeId);
 
         // 5. Request takeoff
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY); // 1
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting takeoff.");
         atc.requestTakeoff(planeId);
         synchronized (atc) {
             while (!atc.isRunwayClearedForTakeoff(planeId)) {
                 try {
-                    atc.wait(500);
+                    atc.wait(Constants.TAKEOFF_REQUEST_TIME_MS);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

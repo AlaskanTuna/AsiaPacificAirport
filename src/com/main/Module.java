@@ -2,11 +2,11 @@
 
 package com.main;
 
-import com.main.AirportMain;
-import com.main.ATC;
-import com.main.Gates;
-import com.main.RefuelingTruck;
-import com.main.Statistics;
+import com.main.ATC.*;
+import com.main.Gates.*;
+import com.main.Planes.*;
+import com.main.RefuelingTruck.*;
+import com.main.Statistics.*;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -130,7 +130,9 @@ public class Module {
 
             System.out.println(Constants.CONTINUE_MSG);
             try {
-                System.in.read();
+                do {
+                    System.in.read();
+                } while (System.in.available() > 0);
             } catch (IOException ignored) {}
 
             resetTime(); // Reset the simulation timer
@@ -170,7 +172,7 @@ public class Module {
                     System.out.println("Exiting simulation.");
                     break;
                 default:
-                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                    System.out.println("Invalid choice. Please try again.");
             }
         }
         scanner.close();

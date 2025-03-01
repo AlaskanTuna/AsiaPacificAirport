@@ -2,11 +2,11 @@
 
 package com.main;
 
-import com.main.ATC;
-import com.main.Gates;
-import com.main.Planes;
-import com.main.Statistics;
-import com.main.Module;
+import com.main.ATC.*;
+import com.main.Gates.*;
+import com.main.Planes.*;
+import com.main.Statistics.*;
+import com.main.Module.*;
 
 import java.util.concurrent.locks.ReentrantLock;
 

@@ -2,11 +2,11 @@
 
 package com.main;
 
-import com.main.ATC;
-import com.main.Planes;
-import com.main.RefuelingTruck;
-import com.main.Statistics;
-import com.main.Module;
+import com.main.ATC.*;
+import com.main.Planes.*;
+import com.main.RefuelingTruck.*;
+import com.main.Statistics.*;
+import com.main.Module.*;
 
 public class Gates implements Runnable {
     // -------------------- Data Fields -------------------- //

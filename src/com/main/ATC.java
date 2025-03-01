@@ -2,11 +2,11 @@
 
 package com.main;
 
-import com.main.Gates;
-import com.main.Planes;
-import com.main.RefuelingTruck;
-import com.main.Statistics;
-import com.main.Module;
+import com.main.Gates.*;
+import com.main.Planes.*;
+import com.main.RefuelingTruck.*;
+import com.main.Statistics.*;
+import com.main.Module.*;
 
 import java.util.Queue;
 import java.util.LinkedList;
