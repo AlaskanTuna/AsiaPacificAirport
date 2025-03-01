@@ -39,10 +39,10 @@ public class ATC implements Runnable {
     public synchronized void requestLanding(int planeId, boolean isEmergency) {
         if (isEmergency) {
             emergencyQueue.add(planeId);
-            Module.printMessage(AirportMain.getTimecode() + " [ATC] Received emergency landing request from Plane " + planeId + ".");
+            Module.printMessage(AirportMain.getTimecode() + " [ATC] Received emergency landing request from Plane " + planeId + ".", Constants.ANSI_RED, false);
         } else {
             landingQueue.add(planeId);
-            Module.printMessage(AirportMain.getTimecode() + " [ATC] Received landing request from Plane " + planeId + ".");
+            Module.printMessage(AirportMain.getTimecode() + " [ATC] Received landing request from Plane " + planeId + ".", Constants.ANSI_RESET, false);
         }
         notifyAll();
     }
@@ -54,7 +54,7 @@ public class ATC implements Runnable {
 
     public synchronized void landingComplete(int planeId) {
         groundCount++;
-        Module.printMessage(AirportMain.getTimecode() + " [ATC] Plane " + planeId + " has successfully landed on runway. Ground count: " + groundCount + ".");
+        Module.printMessage(AirportMain.getTimecode() + " [ATC] Plane " + planeId + " has successfully landed on runway. Ground count: " + groundCount + ".", Constants.ANSI_RESET, false);
         // Announce warning if ground count reaches maximum
         if (groundCount == Constants.MAX_GROUND) {
             Module.announceGroundCountWarning(groundCount, true);
@@ -64,13 +64,13 @@ public class ATC implements Runnable {
 
     public synchronized void requestTakeoff(int planeId) {
         takeoffQueue.add(planeId);
-        Module.printMessage(AirportMain.getTimecode() + " [ATC] Received takeoff request from Plane " + planeId + ".");
+        Module.printMessage(AirportMain.getTimecode() + " [ATC] Received takeoff request from Plane " + planeId + ".", Constants.ANSI_RESET, false);
         notifyAll();
     }
 
     public synchronized void takeoffComplete(int planeId) {
         groundCount--;
-        Module.printMessage(AirportMain.getTimecode() + " [ATC] Plane " + planeId + " has taken off. Ground count: " + groundCount + ".");
+        Module.printMessage(AirportMain.getTimecode() + " [ATC] Plane " + planeId + " has taken off. Ground count: " + groundCount + ".", Constants.ANSI_RESET, false);
         notifyAll();
     }
 
@@ -82,29 +82,29 @@ public class ATC implements Runnable {
                 if (!emergencyQueue.isEmpty() && runwayFree && groundCount < Constants.MAX_GROUND) {
                     int planeId = emergencyQueue.poll();
                     runwayFree = false;
-                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for emergency landing of Plane " + planeId + ". Ground count: " + groundCount + ".");
+                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for emergency landing of Plane " + planeId + ". Ground count: " + groundCount + ".", Constants.ANSI_RED, false);
 
                 // If there are planes in the landing queue, the runway is free and the ground count is less than the maximum allowed, clear the runway for landing
                 } else if (!landingQueue.isEmpty() && runwayFree && groundCount < Constants.MAX_GROUND) {
                     int planeId = landingQueue.poll();
                     runwayFree = false;
-                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for Plane " + planeId + ". Ground count: " + groundCount + ".");
+                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for Plane " + planeId + ". Ground count: " + groundCount + ".", Constants.ANSI_RESET, false);
 
                 // If there are planes in the takeoff queue and the runway is free, clear the runway for takeoff
                 } else if (!takeoffQueue.isEmpty() && runwayFree) {
                     int planeId = takeoffQueue.poll();
                     runwayFree = false;
-                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for Plane " + planeId + " takeoff. Ground count: " + groundCount + ".");
+                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for Plane " + planeId + " takeoff. Ground count: " + groundCount + ".", Constants.ANSI_RESET, false);
 
                 // If there are planes in the emergency landing queue but the runway is not free, wait for the runway to be available
                 } else if (!emergencyQueue.isEmpty() || !landingQueue.isEmpty()) {
                     int planeId = !emergencyQueue.isEmpty() ? emergencyQueue.peek() : landingQueue.peek();
-                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Waiting for runway or ground slot for Plane " + planeId + " landing.");
+                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Waiting for runway or ground slot for Plane " + planeId + " landing.", Constants.ANSI_RESET, false);
 
                 // If there are planes in the takeoff queue but the runway is not free, wait for the runway to be available
                 } else if (!takeoffQueue.isEmpty() && !runwayFree) {
                     int planeId = takeoffQueue.peek();
-                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Waiting runway to be free for Plane " + planeId + " takeoff.");
+                    Module.printMessage(AirportMain.getTimecode() + " [ATC] Waiting runway to be free for Plane " + planeId + " takeoff.", Constants.ANSI_RESET, false);
                 }
 
                 // Free runway after landing/takeoff completion

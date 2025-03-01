@@ -54,10 +54,13 @@ public class Module {
         System.out.println(new String(new char[width]).replace('\0', Constants.DIVIDER_LINE.charAt(0)));
     }
 
-    public static void printMessage(String message) {
+    public static void printMessage(String message, String color, boolean bold) {
         synchronized (printLock) {
             clearScreen();
+            if (bold) System.out.print(Constants.ANSI_BOLD);
+            System.out.print(color);
             System.out.println(message);
+            System.out.print(Constants.ANSI_RESET);
         }
     }
 
@@ -147,6 +150,7 @@ public class Module {
 
         while (running) {
             clearScreen();
+            System.out.print(Constants.ANSI_BOLD);
             printDivider();
             System.out.println(Constants.MENU_TITLE);
             printDivider();
@@ -159,14 +163,17 @@ public class Module {
             String input = scanner.nextLine();
             switch (input) {
                 case "1":
+                    System.out.print(Constants.ANSI_RESET);
                     startTime();
                     AirportMain.normalSimulation(new String[0]);
                     break;
                 case "2":
+                    System.out.print(Constants.ANSI_RESET);
                     startTime();
                     AirportMain.emergencySimulation(new String[0]);
                     break;
                 case "3":
+                    System.out.print(Constants.ANSI_RESET);
                     running = false;
                     clearScreen();
                     System.out.println("Exiting simulation.");

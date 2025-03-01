@@ -43,7 +43,11 @@ public class Planes implements Runnable {
     @Override
     public void run() {
         // 1. Request landing
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting " + (isEmergency ? "emergency " : "") + "landing.");
+        if (isEmergency) {
+            Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting emergency landing.", Constants.ANSI_RED, false);
+        } else {
+            Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting landing.", Constants.ANSI_YELLOW, false);
+        }
         atc.requestLanding(planeId, isEmergency);
         synchronized (atc) {
             while (!atc.isRunwayClearedForLanding(planeId)) {
@@ -54,9 +58,9 @@ public class Planes implements Runnable {
                 }
             }
         }
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Landing on runway.");
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Landing on runway.", Constants.ANSI_YELLOW, false);
         sleep(Constants.LANDING_TIME_MS);
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Landed on runway.");
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Landed on runway.", Constants.ANSI_GREEN, false);
         atc.landingComplete(planeId);
         landingTime = System.currentTimeMillis();
         synchronized (atc) {
@@ -79,20 +83,20 @@ public class Planes implements Runnable {
                         long dockingTime = System.currentTimeMillis();
                         long waitTime = dockingTime - landingTime;
                         statistics.recordGateWaitTime(waitTime);
-                        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Docked at Gate " + g.getGateId() + ".");
+                        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Docked at Gate " + g.getGateId() + ".",
+                                Constants.ANSI_GREEN, false);
                         break;
                     }
                 }
             }
 
-            // 3. Perform gate operations
             if (assignedGate == null) {
-                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Waiting for an available gate.");
+                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Waiting for an available gate.", Constants.ANSI_YELLOW, false);
                 sleep(1000);
             } else {
-                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Disembarking passengers from the plane.");
+                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Disembarking passengers from the plane.", Constants.ANSI_YELLOW, false);
                 assignedGate.performGateOperations(planeId);
-                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Embarked passengers onto the plane.");
+                Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Embarked passengers onto the plane.", Constants.ANSI_GREEN, false);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -107,13 +111,14 @@ public class Planes implements Runnable {
             }
         }
 
-        // 4. Request refuelling
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting refuelling.");
+        // 3. Request refuelling
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting refuelling.", Constants.ANSI_YELLOW, false);
         refuelingTruck.requestRefuel(planeId);
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Refuelling complete.", Constants.ANSI_GREEN, false);
 
-        // 5. Request takeoff
+        // 4. Request takeoff
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY); // 1
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting takeoff.");
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Requesting takeoff.", Constants.ANSI_YELLOW, false);
         atc.requestTakeoff(planeId);
         synchronized (atc) {
             while (!atc.isRunwayClearedForTakeoff(planeId)) {
@@ -124,16 +129,16 @@ public class Planes implements Runnable {
                 }
             }
         }
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Taking off.");
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Taking off.", Constants.ANSI_YELLOW, false);
         sleep(Constants.TAKEOFF_TIME_MS);
-        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Has departed.");
+        Module.printMessage(AirportMain.getTimecode() + " [" + Thread.currentThread().getName() + "] Has departed.", Constants.ANSI_GREEN, false);
         synchronized (atc) {
             atc.setRunwayFree();
             atc.takeoffComplete(planeId);
             atc.notifyAll();
         }
 
-        // 6. Record completion in statistics
+        // 5. Record completion in statistics
         statistics.recordPlaneCompletion(planeId);
     }
 

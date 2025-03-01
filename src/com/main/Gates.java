@@ -41,13 +41,13 @@ public class Gates implements Runnable {
     // -------------------- Methods -------------------- //
 
     public void performGateOperations(int planeId) {
-        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Passengers disembarked from Plane " + planeId + ".");
+        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Passengers disembarked from Plane " + planeId + ".", Constants.ANSI_CYAN, false);
         sleep(Constants.GATE_OPERATION_TIME_MS);
-        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Performing supply refill and cleaning for Plane " + planeId + ".");
+        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Performing supply refill and cleaning for Plane " + planeId + ".", Constants.ANSI_CYAN, false);
         sleep(Constants.GATE_OPERATION_TIME_MS);
-        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Completed supply refill and cleaning for Plane " + planeId + ".");
+        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Completed supply refill and cleaning for Plane " + planeId + ".", Constants.ANSI_CYAN, false);
         sleep(Constants.GATE_OPERATION_TIME_MS);
-        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Passengers are embarking onto Plane " + planeId + ".");
+        Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Passengers are embarking onto Plane " + planeId + ".", Constants.ANSI_CYAN, false);
         synchronized (this) {
             occupied = false;
             notifyAll();

@@ -32,9 +32,9 @@ public class RefuelingTruck implements Runnable {
                 }
             }
             isBusy = true;
-            Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Starting refuelling for Plane " + planeId + ".");
+            Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Starting refuelling for Plane " + planeId + ".", Constants.ANSI_ORANGE, false);
             sleep(Constants.REFUEL_TIME_MS);
-            Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Completed refuelling for Plane " + planeId + ".");
+            Module.printMessage(AirportMain.getTimecode() + " [" + threadName + "] Completed refuelling for Plane " + planeId + ".", Constants.ANSI_ORANGE, false);
             isBusy = false;
         } finally {
             lock.unlock();
