@@ -10,8 +10,8 @@ public class Constants {
     public static final int PASSENGERS_PER_PLANE = 50;
     public static final int MAX_GROUND = 3; // Max planes on the ground (incl. runway)
     public static final int NUM_PLANES = 6;
-    public static final int LANDING_REQUEST_TIME_MS = 2000;
-    public static final int TAKEOFF_REQUEST_TIME_MS = 2000;
+    public static final int LANDING_REQUEST_TIME_MS = 1000;
+    public static final int TAKEOFF_REQUEST_TIME_MS = 1000;
     public static final int LANDING_TIME_MS = 2000;
     public static final int TAKEOFF_TIME_MS = 2000;
     public static final int PLANE_ARRIVAL_MAX_DELAY_MS = 3000;

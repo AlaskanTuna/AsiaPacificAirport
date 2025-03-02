@@ -33,6 +33,12 @@ public class ATC implements Runnable {
         return groundCount;
     }
 
+    // -------------------- Setters -------------------- //
+
+    public synchronized void setRunwayFree() {
+        runwayFree = true;
+    }
+
     // -------------------- Methods -------------------- //
 
     // Overload method for emergency landing
@@ -78,40 +84,28 @@ public class ATC implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             synchronized (this) {
-                // If there are planes in the emergency landing queue, the runway is free and the ground count is less than the maximum allowed, clear the runway for emergency landing
                 if (!emergencyQueue.isEmpty() && runwayFree && groundCount < Constants.MAX_GROUND) {
                     int planeId = emergencyQueue.poll();
                     runwayFree = false;
                     Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for emergency landing of Plane " + planeId + ". Ground count: " + groundCount + ".", Constants.ANSI_RED, false);
-
-                // If there are planes in the landing queue, the runway is free and the ground count is less than the maximum allowed, clear the runway for landing
                 } else if (!landingQueue.isEmpty() && runwayFree && groundCount < Constants.MAX_GROUND) {
                     int planeId = landingQueue.poll();
                     runwayFree = false;
                     Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for Plane " + planeId + ". Ground count: " + groundCount + ".", Constants.ANSI_RESET, false);
-
-                // If there are planes in the takeoff queue and the runway is free, clear the runway for takeoff
                 } else if (!takeoffQueue.isEmpty() && runwayFree) {
                     int planeId = takeoffQueue.poll();
                     runwayFree = false;
                     Module.printMessage(AirportMain.getTimecode() + " [ATC] Runway cleared for Plane " + planeId + " takeoff. Ground count: " + groundCount + ".", Constants.ANSI_RESET, false);
-
-                // If there are planes in the emergency landing queue but the runway is not free, wait for the runway to be available
                 } else if (!emergencyQueue.isEmpty() || !landingQueue.isEmpty()) {
                     int planeId = !emergencyQueue.isEmpty() ? emergencyQueue.peek() : landingQueue.peek();
                     Module.printMessage(AirportMain.getTimecode() + " [ATC] Waiting for runway or ground slot for Plane " + planeId + " landing.", Constants.ANSI_RESET, false);
-
-                // If there are planes in the takeoff queue but the runway is not free, wait for the runway to be available
                 } else if (!takeoffQueue.isEmpty() && !runwayFree) {
                     int planeId = takeoffQueue.peek();
                     Module.printMessage(AirportMain.getTimecode() + " [ATC] Waiting runway to be free for Plane " + planeId + " takeoff.", Constants.ANSI_RESET, false);
                 }
 
-                // Free runway after landing/takeoff completion
-                if (runwayFree && groundCount > 0 && landingQueue.isEmpty() && takeoffQueue.isEmpty()) {}
-
                 try {
-                    wait(Constants.RUNWAY_CHECK_TIME_MS); // Simulate checking interval for runway availability
+                    wait(Constants.RUNWAY_CHECK_TIME_MS); // Wait for runway availability
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -127,9 +121,5 @@ public class ATC implements Runnable {
 
     public synchronized boolean isRunwayClearedForTakeoff(int planeId) {
         return !runwayFree && !takeoffQueue.contains(planeId);
-    }
-
-    public synchronized void setRunwayFree() {
-        runwayFree = true;
     }
 }
